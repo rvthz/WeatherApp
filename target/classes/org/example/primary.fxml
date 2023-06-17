@@ -1,16 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Button?>
-<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.PrimaryController">
-   <children>
-      <Label text="Primary View" />
-      <Button fx:id="primaryButton" text="Switch to Secondary View" onAction="#switchToSecondary"/>
-   </children>
-   <padding>
-      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-   </padding>
-</VBox>
+<?import javafx.scene.layout.HBox?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.PrimaryController">
+
+   <top>
+      <HBox spacing="10">
+         <TextField promptText="Wyszukaj miasto" fx:id="searchField" />
+         <Button text="Szukaj" fx:id="searchButton" />
+      </HBox>
+   </top>
+
+   <left>
+      <VBox styleClass="side-menu">
+         <Button text="Przycisk 1" fx:id="button1" />
+         <Button text="Przycisk 2" fx:id="button2" />
+         <Button text="Przycisk 3" fx:id="button3" />
+         <!-- Dodaj inne przyciski -->
+      </VBox>
+   </left>
+
+   <center>
+      <VBox spacing="10" alignment="CENTER">
+         <ImageView fx:id="weatherImage" />
+         <Label fx:id="temperatureLabel" text="Temperatura: 25°C" />
+         <Label fx:id="weatherDescriptionLabel" text="Pogoda: Słonecznie" />
+         <Label fx:id="cityNameLabel" text="Miasto: Warszawa" />
+
+         <Label fx:id="minTempLabel" text="Temp. min: 18°C" />
+         <Label fx:id="maxTempLabel" text="Temp. max: 30°C" />
+         <Label fx:id="pressureLabel" text="Ciśnienie: 1015 hPa" />
+         <Label fx:id="humidityLabel" text="Wilgotność: 70%" />
+         <Label fx:id="windSpeedLabel" text="Prędkość wiatru: 10 km/h" />
+      </VBox>
+   </center>
+
+</BorderPane>
