@@ -12,6 +12,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.StageStyle;
 import org.example.ForecastData;
 import org.json.JSONArray;
@@ -28,6 +29,7 @@ import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -128,6 +130,29 @@ public class PrimaryController {
     @FXML
     private ImageView day5icon;
 
+    private String language = "pl";
+
+    @FXML
+    private ToggleButton plButton;
+
+    @FXML
+    private Label feelsLikeLabel;
+
+    @FXML
+    private Label sunriseLabel;
+
+    @FXML
+    private Label sunsetLabel;
+
+    @FXML
+    private Label windDirectionLabel;
+
+    @FXML
+    private Label uvIndexLabel;
+
+    @FXML
+    private ToggleButton enButton;
+
     private static final String API_KEY = "f45cb2c8afa6167eddcf6236a0a59e31";
     private static final String API_URL = "http://api.openweathermap.org/data/2.5/weather";
 
@@ -145,8 +170,13 @@ public class PrimaryController {
 
     private void initialize() throws IOException {
 
-        searchField.setVisible(false); // Ukrywamy pole tekstowe na początku
+        searchField.setVisible(false);
         searchButton.setText("Szukaj");
+        //plButton.setOnAction(event -> changeLanguage("pl"));
+        //enButton.setOnAction(event -> changeLanguage("en"));
+        String lastCity = CityPreferences.getLastCity();
+        double lastLatitude = CityPreferences.getLastLatitude();
+        double lastLongitude = CityPreferences.getLastLongitude();
         searchButton.setOnAction(event -> {
             if (!isSearchMode) {
                 searchButton.setText("Zatwierdź");
@@ -163,23 +193,61 @@ public class PrimaryController {
 
         double latitude = 50.02599;
         double longitude = 20.96406;
-        initSearch(latitude, longitude);
+        initSearch(latitude, longitude); //inicjalizacja
+
 
 
     }
 
+
+
     private void initSearch(double lat, double lon) throws IOException {
+        //czas rzeczywisty
         String weatherData = fetchDataFromApi(String.valueOf(lat), String.valueOf(lon), "pl");
         parseWeatherData(weatherData);
 
+        //prognoza 5 dni
         String forecastData = getForecastData(String.valueOf(lat), String.valueOf(lon));
         List<ForecastData> forecastList = parseForecastData(forecastData);
         processForecastList(forecastList);
-
         List<List<ForecastData>> groupedForecastData = groupForecastDataByDate(forecastList);
         processGroupedForecastData(groupedForecastData);
     }
 
+    private void changeLanguage(String newLanguage) { //nie działa
+        if (!newLanguage.equals(language)) {
+            language = newLanguage;
+
+            try {
+                ResourceBundle bundle = ResourceBundle.getBundle("org.example.resources.labels", new Locale(language));
+
+                // Set labels and buttons text
+                temperatureLabel.setText(bundle.getString("temperature_label"));
+                weatherDescriptionLabel.setText(bundle.getString("weather_description_label"));
+                cityNameLabel.setText(bundle.getString("city_name_label"));
+                minTempLabel.setText(bundle.getString("min_temp_label"));
+                maxTempLabel.setText(bundle.getString("max_temp_label"));
+                pressureLabel.setText(bundle.getString("pressure_label"));
+                humidityLabel.setText(bundle.getString("humidity_label"));
+                windSpeedLabel.setText(bundle.getString("wind_speed_label"));
+                searchButton.setText(bundle.getString("search_button"));
+                searchField.setPromptText(bundle.getString("search_field_prompt"));
+
+                // Set toggle buttons text
+                plButton.setText(bundle.getString("pl_button"));
+                enButton.setText(bundle.getString("en_button"));
+
+                double latitude = 50.02599;
+                double longitude = 20.96406;
+                initSearch(latitude, longitude);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+    //popup z opcjami wyszukiawnia
     private void showDialog(String searchText) {
         List<CityData> cityList = geocodeLocation(searchText);
 
@@ -193,8 +261,9 @@ public class PrimaryController {
         VBox vbox = new VBox();
         vbox.setSpacing(10);
 
-        int maxItems = Math.min(cityList.size(), 10); // Ograniczenie do maksymalnie 10 pozycji
+        int maxItems = Math.min(cityList.size(), 5); // Ograniczenie do maksymalnie 5 (tyle mozna odebrac przez api)
 
+        //tworzenie listy w pop upie
         for (int i = 0; i < maxItems; i++) {
             CityData cityData = cityList.get(i);
 
@@ -208,7 +277,10 @@ public class PrimaryController {
             flagImageView.setImage(getFlagImage(cityData.getCountry()));
 
             Label cityNameLabel = new Label(cityData.getCityName());
+            cityNameLabel.setFont(Font.font("Arial", 20));
+
             Label coordinatesLabel = new Label(String.format("Lat: %.2f, Lon: %.2f", cityData.getLat(), cityData.getLon()));
+            coordinatesLabel.setFont(Font.font("Arial", 15));
 
             cityBox.getChildren().addAll(flagImageView, cityNameLabel, coordinatesLabel);
             cityBox.setCursor(Cursor.HAND);
@@ -238,28 +310,26 @@ public class PrimaryController {
     }
 
 
+
+    //nazwa na koordynaty
     private List<CityData> geocodeLocation(String locationName) {
         List<CityData> cityList = new ArrayList<>();
 
         try {
-            // Encode the location name to URL-safe format
+
             String encodedLocation = URLEncoder.encode(locationName, StandardCharsets.UTF_8);
 
-            // Construct the API URL for geocoding
             String apiUrl = "http://api.openweathermap.org/geo/1.0/direct?q=" + encodedLocation +
                     "&limit=10&appid=" + API_KEY;
 
-            // Send a GET request to the API URL
             HttpClient httpClient = HttpClient.newHttpClient();
             HttpRequest httpRequest = HttpRequest.newBuilder()
                     .uri(URI.create(apiUrl))
                     .build();
             HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
-            // Parse the API response
             JSONArray jsonArray = new JSONArray(httpResponse.body());
 
-            // Iterate over the JSON array and create CityData objects
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
 
@@ -279,6 +349,7 @@ public class PrimaryController {
     }
 
 
+    //flagi
     private Image getFlagImage(String countryCode) {
         try {
             String flagUrl = "https://flagcdn.com/w80/" + countryCode.toLowerCase() + ".png";
@@ -309,8 +380,9 @@ public class PrimaryController {
         return result.toString();
     }
 
+    //prognoza
     private String getForecastData(String latitude, String longitude) throws IOException {
-        String urlString = "https://api.openweathermap.org/data/2.5/forecast?lat=" + latitude + "&lon=" + longitude + "&appid=" + API_KEY;
+        String urlString = "https://api.openweathermap.org/data/2.5/forecast?lat=" + latitude + "&lon=" + longitude + "&appid=" + API_KEY + "&lang=" + language;
         StringBuilder result = new StringBuilder();
 
         URL url = new URL(urlString);
@@ -327,12 +399,14 @@ public class PrimaryController {
         return result.toString();
     }
 
+    //dane czasu rzeczywistego
     private void parseWeatherData(String weatherData) {
         try {
             JSONObject json = new JSONObject(weatherData);
             JSONObject main = json.getJSONObject("main");
             JSONObject wind = json.getJSONObject("wind");
             JSONObject weather = json.getJSONArray("weather").getJSONObject(0);
+            JSONObject sys = json.getJSONObject("sys");
 
             double temperature = main.getDouble("temp");
             double minTemperature = main.getDouble("temp_min");
@@ -341,40 +415,54 @@ public class PrimaryController {
             int humidity = main.getInt("humidity");
             double windSpeed = wind.getDouble("speed");
             String iconCode = weather.getString("icon");
+            double feelsLike = main.getDouble("feels_like");
+            double windDirection = wind.getDouble("deg");
 
             DecimalFormat decimalFormat = new DecimalFormat("#.#");
             double temperatureCelsius = temperature - 273.15;
+            double feelsLikeCelsius = feelsLike - 273.15;
 
-            // Set the labels with weather data
+
             temperatureLabel.setText(Math.round(temperatureCelsius) + "°C");
-
-
             minTempLabel.setText(decimalFormat.format(minTemperature - 273.15) + "°C");
             maxTempLabel.setText(decimalFormat.format(maxTemperature - 273.15) + "°C");
-
             pressureLabel.setText("Ciśnienie " + pressure + " hPa");
             humidityLabel.setText("Wilgotność " + humidity + "%");
             windSpeedLabel.setText("Wiatr " + decimalFormat.format(windSpeed) + " m/s");
+            feelsLikeLabel.setText("Odczuwalna " + decimalFormat.format(feelsLikeCelsius) + "°C");
 
-            // Set the weather description label
+
             String weatherDescription = weather.getString("description");
             weatherDescriptionLabel.setText(weatherDescription);
 
-            // Load weather icon
             String iconUrl = "https://openweathermap.org/img/wn/" + iconCode + "@4x.png";
             Image image = new Image(iconUrl);
             weatherImage.setImage(image);
 
             String cityName = json.getString("name");
 
-            // Set the city name label
+
             cityNameLabel.setText(cityName);
+
+            String windDirectionText = getWindDirectionText(windDirection);
+            windDirectionLabel.setText("Kierunek wiatru " + windDirectionText);
+
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    //kierunek wiatru konwertowany ze stopni
+    private String getWindDirectionText(double windDirection) {
+        String[] directions = {"Północny", "Północno-Wschodni", "Wschodni", "Południowo-Wschodni", "Południowy",
+                "Południowo-Zachodni", "Zachodni", "Północno-Zachodni"};
+        int index = (int) Math.round(((windDirection % 360) / 45));
+        return directions[index % 8];
+    }
+
+
+    //dane prognozy
     private List<ForecastData> parseForecastData(String forecastData) {
         List<ForecastData> forecastList = new ArrayList<>();
 
@@ -403,6 +491,7 @@ public class PrimaryController {
         return forecastList;
     }
 
+    //konwersja timestampów
     private void processForecastList(List<ForecastData> forecastList) {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM");
         for (ForecastData forecast : forecastList) {
@@ -416,7 +505,7 @@ public class PrimaryController {
     }
 
 
-
+    //grupowanie po datach - każda lista to inny dzien
     private List<List<ForecastData>> groupForecastDataByDate(List<ForecastData> forecastList) {
         Map<String, List<ForecastData>> groupedData = new HashMap<>();
 
@@ -435,6 +524,7 @@ public class PrimaryController {
         return new ArrayList<>(groupedData.values());
     }
 
+    //przetwarzanie pogrupowanych dat na dane do prognozy
     private void processGroupedForecastData(List<List<ForecastData>> groupedForecastData) {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM");
         LocalDate currentDate = LocalDate.now();
@@ -475,7 +565,7 @@ public class PrimaryController {
         }
     }
 
-
+    //wypisywanie prognozy
     private void setTemperatureFields(int dayIndex, double minTemperature, double maxTemperature, String date, String iconCode) {
         DecimalFormat decimalFormat = new DecimalFormat("#.#");
         String iconUrl = "https://openweathermap.org/img/wn/" + iconCode + "@2x.png";
@@ -520,7 +610,6 @@ public class PrimaryController {
         Image image = new Image(imageUrl);
         imageView.setImage(image);
     }
-
 
 
 }

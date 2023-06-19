@@ -6,154 +6,151 @@
 
 <?import javafx.geometry.Insets?>
 <?import java.net.URL?>
-<BorderPane xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.PrimaryController">
+<VBox xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.PrimaryController">
 
    <stylesheets>
       <URL value="@styles.css" />
    </stylesheets>
 
-   <top>
+   <children>
       <HBox spacing="10" style="-fx-padding: 10;" alignment="CENTER">
-         <Label fx:id="forecastTitle" text="Forecast" style="-fx-font-size: 30px;"/>
+         <Label fx:id="forecastTitle" text="Prognoza pogody" style="-fx-font-size: 30px;"/>
          <Region HBox.hgrow="ALWAYS" />
          <TextField fx:id="searchField"/>
          <Button text="Szukaj" fx:id="searchButton" />
-         <Button text="Button 2" />
-         <Button text="Button 3" />
+         <ToggleButton fx:id="plButton" styleClass="flag-button polish-flag" text="PL"/>
+         <ToggleButton fx:id="enButton" styleClass="flag-button english-flag" text="EN"/>
       </HBox>
-   </top>
 
-   <center>
-         <HBox alignment="CENTER" styleClass="body">
-            <VBox alignment="CENTER" spacing="10">
-               <Label fx:id="cityNameLabel" text="Nazwa miasta" style="-fx-font-size: 30px;"/>
-               <HBox alignment="CENTER" spacing="20">
-                  <ImageView fx:id="weatherImage"/>
-                  <Label fx:id="temperatureLabel" text="69°C" style="-fx-font-size: 50px;" />
+      <HBox alignment="CENTER" styleClass="body">
+         <VBox alignment="CENTER" spacing="10">
+            <Label fx:id="cityNameLabel" style="-fx-font-size: 40px;"/>
+            <HBox alignment="CENTER" spacing="20">
+               <ImageView fx:id="weatherImage"/>
+               <Label fx:id="temperatureLabel" text="69°C" style="-fx-font-size: 50px;" />
 
-               </HBox>
-               <Label fx:id="weatherDescriptionLabel" text="Słonecznie" style="-fx-font-size: 50px;"/>
-               <HBox alignment="CENTER" spacing="5">
-                  <Label fx:id="minTempLabel" text="Temp. min: 18°C" />
-                  <Label fx:id="maxTempLabel" text="Temp. max: 30°C" />
-               </HBox>
-               <HBox alignment="CENTER" spacing="5">
-                  <Label fx:id="pressureLabel" text="Ciśnienie: 1015 hPa" />
-                  <Label fx:id="humidityLabel" text="Wilgotność: 70%" />
-                  <Label fx:id="windSpeedLabel" text="Prędkość wiatru: 10 km/h" />
-               </HBox>
-               <HBox alignment="CENTER">
-                  <VBox alignment="CENTER" spacing="10" HBox.hgrow="ALWAYS">
-                     <VBox alignment="CENTER" spacing="10">
-                        <Label fx:id="day1date" text="9.11" />
-                        <ImageView fx:id="day1icon" />
-                        <HBox alignment="CENTER">
-                           <Label fx:id="day1min" text="1°C">
-                              <HBox.margin>
-                                 <Insets left="5" />
-                              </HBox.margin>
-                           </Label>
-                           <Region HBox.hgrow="ALWAYS" />
-                           <Label fx:id="day1max" text="99°C">
-                              <HBox.margin>
-                                 <Insets right="5" />
-                              </HBox.margin>
-                           </Label>
-                        </HBox>
-                     </VBox>
-
+            </HBox>
+            <Label fx:id="weatherDescriptionLabel" text="Słonecznie" style="-fx-font-size: 50px;"/>
+            <HBox alignment="CENTER" spacing="15">
+               <Label fx:id="minTempLabel" style="-fx-font-size: 20px;"/>
+               <Label fx:id="maxTempLabel"  style="-fx-font-size: 20px;"/>
+               <Label fx:id="feelsLikeLabel" style="-fx-font-size: 20px;"/>
+            </HBox>
+            <HBox alignment="CENTER" spacing="15">
+               <Label fx:id="pressureLabel" style="-fx-font-size: 20px;" />
+               <Label fx:id="humidityLabel" style="-fx-font-size: 20px;" />
+               <Label fx:id="windSpeedLabel" style="-fx-font-size: 20px;" />
+               <Label fx:id="windDirectionLabel" style="-fx-font-size: 20px;" />
+            </HBox>
+            <HBox alignment="CENTER" styleClass="forecast">
+               <VBox alignment="CENTER" spacing="10" HBox.hgrow="ALWAYS">
+                  <VBox alignment="CENTER" spacing="10">
+                     <Label fx:id="day1date" text="9.11" />
+                     <ImageView fx:id="day1icon" />
+                     <HBox alignment="CENTER">
+                        <Label fx:id="day1min" text="1°C">
+                           <HBox.margin>
+                              <Insets left="5" />
+                           </HBox.margin>
+                        </Label>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="day1max" text="99°C">
+                           <HBox.margin>
+                              <Insets right="5" />
+                           </HBox.margin>
+                        </Label>
+                     </HBox>
                   </VBox>
-                  <Region HBox.hgrow="ALWAYS" />
-                  <VBox alignment="CENTER" spacing="10" HBox.hgrow="ALWAYS">
-                     <VBox alignment="CENTER" spacing="10">
-                        <Label fx:id="day2date" text="9.11" />
-                        <ImageView fx:id="day2icon" />
-                        <HBox alignment="CENTER">
-                           <Label fx:id="day2min" text="1°C">
-                              <HBox.margin>
-                                 <Insets left="5" />
-                              </HBox.margin>
-                           </Label>
-                           <Region HBox.hgrow="ALWAYS" />
-                           <Label fx:id="day2max" text="99°C">
-                              <HBox.margin>
-                                 <Insets right="5" />
-                              </HBox.margin>
-                           </Label>
-                        </HBox>
-                     </VBox>
 
+               </VBox>
+               <Region HBox.hgrow="ALWAYS" />
+               <VBox alignment="CENTER" spacing="10" HBox.hgrow="ALWAYS">
+                  <VBox alignment="CENTER" spacing="10">
+                     <Label fx:id="day2date" text="9.11" />
+                     <ImageView fx:id="day2icon" />
+                     <HBox alignment="CENTER">
+                        <Label fx:id="day2min" text="1°C">
+                           <HBox.margin>
+                              <Insets left="5" />
+                           </HBox.margin>
+                        </Label>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="day2max" text="99°C">
+                           <HBox.margin>
+                              <Insets right="5" />
+                           </HBox.margin>
+                        </Label>
+                     </HBox>
                   </VBox>
-                  <Region HBox.hgrow="ALWAYS" />
-                  <VBox alignment="CENTER" spacing="10" HBox.hgrow="ALWAYS">
-                     <VBox alignment="CENTER" spacing="10">
-                        <Label fx:id="day3date" text="9.11" />
-                        <ImageView fx:id="day3icon" />
-                        <HBox alignment="CENTER">
-                           <Label fx:id="day3min" text="1°C">
-                              <HBox.margin>
-                                 <Insets left="5" />
-                              </HBox.margin>
-                           </Label>
-                           <Region HBox.hgrow="ALWAYS" />
-                           <Label fx:id="day3max" text="99°C">
-                              <HBox.margin>
-                                 <Insets right="5" />
-                              </HBox.margin>
-                           </Label>
-                        </HBox>
-                     </VBox>
 
+               </VBox>
+               <Region HBox.hgrow="ALWAYS" />
+               <VBox alignment="CENTER" spacing="10" HBox.hgrow="ALWAYS">
+                  <VBox alignment="CENTER" spacing="10">
+                     <Label fx:id="day3date" text="9.11" />
+                     <ImageView fx:id="day3icon" />
+                     <HBox alignment="CENTER">
+                        <Label fx:id="day3min" text="1°C">
+                           <HBox.margin>
+                              <Insets left="5" />
+                           </HBox.margin>
+                        </Label>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="day3max" text="99°C">
+                           <HBox.margin>
+                              <Insets right="5" />
+                           </HBox.margin>
+                        </Label>
+                     </HBox>
                   </VBox>
-                  <Region HBox.hgrow="ALWAYS" />
-                  <VBox alignment="CENTER" spacing="10" HBox.hgrow="ALWAYS">
-                     <VBox alignment="CENTER" spacing="10">
-                        <Label fx:id="day4date" text="9.11" />
-                        <ImageView fx:id="day4icon" />
-                        <HBox alignment="CENTER">
-                           <Label fx:id="day4min" text="1°C">
-                              <HBox.margin>
-                                 <Insets left="5" />
-                              </HBox.margin>
-                           </Label>
-                           <Region HBox.hgrow="ALWAYS" />
-                           <Label fx:id="day4max" text="99°C">
-                              <HBox.margin>
-                                 <Insets right="5" />
-                              </HBox.margin>
-                           </Label>
-                        </HBox>
-                     </VBox>
 
+               </VBox>
+               <Region HBox.hgrow="ALWAYS" />
+               <VBox alignment="CENTER" spacing="10" HBox.hgrow="ALWAYS">
+                  <VBox alignment="CENTER" spacing="10">
+                     <Label fx:id="day4date" text="9.11" />
+                     <ImageView fx:id="day4icon" />
+                     <HBox alignment="CENTER">
+                        <Label fx:id="day4min" text="1°C">
+                           <HBox.margin>
+                              <Insets left="5" />
+                           </HBox.margin>
+                        </Label>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="day4max" text="99°C">
+                           <HBox.margin>
+                              <Insets right="5" />
+                           </HBox.margin>
+                        </Label>
+                     </HBox>
                   </VBox>
-                  <Region HBox.hgrow="ALWAYS" />
-                  <VBox alignment="CENTER" spacing="10" HBox.hgrow="ALWAYS">
-                     <VBox alignment="CENTER" spacing="10">
-                        <Label fx:id="day5date" text="9.11" />
-                        <ImageView fx:id="day5icon" />
-                        <HBox alignment="CENTER">
-                           <Label fx:id="day5min" text="1°C">
-                              <HBox.margin>
-                                 <Insets left="5" />
-                              </HBox.margin>
-                           </Label>
-                           <Region HBox.hgrow="ALWAYS" />
-                           <Label fx:id="day5max" text="99°C">
-                              <HBox.margin>
-                                 <Insets right="5" />
-                              </HBox.margin>
-                           </Label>
-                        </HBox>
-                     </VBox>
 
+               </VBox>
+               <Region HBox.hgrow="ALWAYS" />
+               <VBox alignment="CENTER" spacing="10" HBox.hgrow="ALWAYS">
+                  <VBox alignment="CENTER" spacing="10">
+                     <Label fx:id="day5date" text="9.11" />
+                     <ImageView fx:id="day5icon" />
+                     <HBox alignment="CENTER">
+                        <Label fx:id="day5min" text="1°C">
+                           <HBox.margin>
+                              <Insets left="5" />
+                           </HBox.margin>
+                        </Label>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="day5max" text="99°C">
+                           <HBox.margin>
+                              <Insets right="5" />
+                           </HBox.margin>
+                        </Label>
+                     </HBox>
                   </VBox>
-               </HBox>
 
-            </VBox>
+               </VBox>
+            </HBox>
 
-         </HBox>
+         </VBox>
 
-
-
-   </center>
-</BorderPane>
+      </HBox>
+   </children>
+</VBox>

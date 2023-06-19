@@ -1,7 +1,5 @@
-org\example\SecondaryController.class
-org\example\App.class
 org\example\PrimaryController.class
 org\example\CityData.class
-org\example\LocationWindowController.class
+org\example\App.class
 org\example\ForecastData.class
 org\example\LocationResult.class

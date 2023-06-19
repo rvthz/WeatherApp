@@ -1,10 +1,54 @@
 /* styles.css */
-.header {
-   -fx-background-color: #808080; /* Ustawia kolor tła na ciemny (#333333) */
-   -fx-text-fill: white; /* Ustawia kolor czcionki na biały */
+.flag-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.polish-flag {
+    -fx-background-image: url('pl.png');
+}
+
+.english-flag {
+    -fx-background-image: url('gb.png');
+}
+
+
+.root {
+    -fx-background-color: #03254c;
 }
 
 .body {
-   -fx-background-color: #808080; /* Ustawia kolor tła na ciemny (#333333) */
-   -fx-text-fill: white; /* Ustawia kolor czcionki na biały */
+    -fx-background-color: #129FB0;
 }
+
+.top {
+    -fx-background-color: #2C3E50;
+    -fx-padding: 10;
+}
+
+.forecast {
+    -fx-background-color: #0D7683;
+    -fx-padding: 10;
+    -fx-font-size: 20px;
+}
+
+.top > .flag-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+}
+
+.temperatureLabel {
+    -fx-font-size: 50px;
+    -fx-text-fill: white;
+}
+
+.weatherDescriptionLabel {
+    -fx-font-size: 50px;
+    -fx-text-fill: white;
+}
+
+
+.label {
+    -fx-text-fill: white;
+}
+
