@@ -1,5 +1,9 @@
 package org.example;
 
+/**
+ * Klasa przechowująca dane do prognozy pogody
+ */
+
 public class ForecastData {
     private long timestamp;
     private double minTemperature;

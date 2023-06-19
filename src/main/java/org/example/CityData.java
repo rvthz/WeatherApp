@@ -1,6 +1,8 @@
 package org.example;
 
-
+/**
+ * Klasa przechowująca dane o lokacjach
+ */
 
 public class CityData {
     private String country, cityName;

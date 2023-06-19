@@ -35,6 +35,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+/**
+ * Klasa głównego kontrolera
+ */
 public class PrimaryController {
 
     @FXML
@@ -151,6 +154,9 @@ public class PrimaryController {
     private Label uvIndexLabel;
 
     @FXML
+    private Button refreshButton;
+
+    @FXML
     private ToggleButton enButton;
 
     private static final String API_KEY = "f45cb2c8afa6167eddcf6236a0a59e31";
@@ -161,10 +167,6 @@ public class PrimaryController {
 
     private List<CityData> cityList; // Lista zawierająca dane miast
 
-    public void setCityList(List<CityData> cityList) {
-        this.cityList = cityList;
-    }
-
 
     @FXML
 
@@ -174,9 +176,10 @@ public class PrimaryController {
         searchButton.setText("Szukaj");
         //plButton.setOnAction(event -> changeLanguage("pl"));
         //enButton.setOnAction(event -> changeLanguage("en"));
-        String lastCity = CityPreferences.getLastCity();
-        double lastLatitude = CityPreferences.getLastLatitude();
-        double lastLongitude = CityPreferences.getLastLongitude();
+        //String lastCity = CityPreferences.getLastCity();
+        //double lastLatitude = CityPreferences.getLastLatitude();
+        //double lastLongitude = CityPreferences.getLastLongitude();
+
         searchButton.setOnAction(event -> {
             if (!isSearchMode) {
                 searchButton.setText("Zatwierdź");
@@ -193,6 +196,13 @@ public class PrimaryController {
 
         double latitude = 50.02599;
         double longitude = 20.96406;
+        refreshButton.setOnAction(event->{
+            try {
+                initSearch(latitude, longitude);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
         initSearch(latitude, longitude); //inicjalizacja
 
 
@@ -200,7 +210,11 @@ public class PrimaryController {
     }
 
 
-
+    /**
+     * Metoda rozpoczynająca wyszukiwanie pogody
+     * @param lat Szerokość geograficzna
+     * @param lon Długość geograficzna
+     */
     private void initSearch(double lat, double lon) throws IOException {
         //czas rzeczywisty
         String weatherData = fetchDataFromApi(String.valueOf(lat), String.valueOf(lon), "pl");
@@ -247,7 +261,10 @@ public class PrimaryController {
     }
 
 
-    //popup z opcjami wyszukiawnia
+    /**
+     * Metoda tworząca pop up z wyszukanymi lokalizacjami
+     * @param searchText nazwa lokalizacji wpisana przez użytkownika
+     */
     private void showDialog(String searchText) {
         List<CityData> cityList = geocodeLocation(searchText);
 
@@ -311,7 +328,10 @@ public class PrimaryController {
 
 
 
-    //nazwa na koordynaty
+    /**
+     * Metoda używająca Geocoding API do dokładnego szukania lokalizacji
+     * @param locationName nazwa lokalizacji wpisana przez użytkownika
+     */
     private List<CityData> geocodeLocation(String locationName) {
         List<CityData> cityList = new ArrayList<>();
 
@@ -349,7 +369,11 @@ public class PrimaryController {
     }
 
 
-    //flagi
+    /**
+     * Medota służąca do flag państw
+     * @param countryCode kod ISO państwa
+     * @returns obraz z flagą państwa
+     */
     private Image getFlagImage(String countryCode) {
         try {
             String flagUrl = "https://flagcdn.com/w80/" + countryCode.toLowerCase() + ".png";
@@ -361,7 +385,13 @@ public class PrimaryController {
         return null;
     }
 
-
+    /**
+     * Metoda służąca do pobierania danych z API
+     * @param latitude Szerokość geogr.
+     * @param longitude Długość geogr.
+     * @param language Język, w jakim pobrane zostaną dane
+     * @returns Wynik zapytania GET
+     */
     private String fetchDataFromApi(String latitude, String longitude, String language) throws IOException {
         String urlString = API_URL + "?lat=" + latitude + "&lon=" + longitude + "&appid=" + API_KEY + "&lang=" + URLEncoder.encode(language, "UTF-8");
         StringBuilder result = new StringBuilder();
@@ -380,7 +410,9 @@ public class PrimaryController {
         return result.toString();
     }
 
-    //prognoza
+    /**
+     * Pobieranie danych prognozy
+     */
     private String getForecastData(String latitude, String longitude) throws IOException {
         String urlString = "https://api.openweathermap.org/data/2.5/forecast?lat=" + latitude + "&lon=" + longitude + "&appid=" + API_KEY + "&lang=" + language;
         StringBuilder result = new StringBuilder();
@@ -399,7 +431,10 @@ public class PrimaryController {
         return result.toString();
     }
 
-    //dane czasu rzeczywistego
+    /**
+     * Pobieranie danych pogodowych w danym momencie
+     * @param weatherData wynik zapytania GET
+     */
     private void parseWeatherData(String weatherData) {
         try {
             JSONObject json = new JSONObject(weatherData);
@@ -453,7 +488,11 @@ public class PrimaryController {
         }
     }
 
-    //kierunek wiatru konwertowany ze stopni
+    /**
+     * Konwersja wiatru stopnie -> kierunek
+     * @param windDirection kierunek wiatru w stopniach
+     * @returns kierunek wiatru słownie
+     */
     private String getWindDirectionText(double windDirection) {
         String[] directions = {"Północny", "Północno-Wschodni", "Wschodni", "Południowo-Wschodni", "Południowy",
                 "Południowo-Zachodni", "Zachodni", "Północno-Zachodni"};
@@ -462,7 +501,11 @@ public class PrimaryController {
     }
 
 
-    //dane prognozy
+    /**
+     * Pobieranie danych do prognozy
+     * @param forecastData wynik zapytania GET
+     * @returns Lista snapshotów pogodowych (co 3 godziny)
+     */
     private List<ForecastData> parseForecastData(String forecastData) {
         List<ForecastData> forecastList = new ArrayList<>();
 
@@ -491,7 +534,10 @@ public class PrimaryController {
         return forecastList;
     }
 
-    //konwersja timestampów
+    /**
+     * Konwersja timestampów do sortowania listy
+     * @param forecastList lista zdarzeń pogodowych co 3h
+     */
     private void processForecastList(List<ForecastData> forecastList) {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM");
         for (ForecastData forecast : forecastList) {
@@ -505,7 +551,11 @@ public class PrimaryController {
     }
 
 
-    //grupowanie po datach - każda lista to inny dzien
+    /**
+     * Grupowanie dat prognozy pogody
+     * @param forecastList lista zdarzeń pogodowych co 3h po konwersji timestampów
+     * @returns Lista list, zawierająca listy zdarzeń dla różnych dat
+     */
     private List<List<ForecastData>> groupForecastDataByDate(List<ForecastData> forecastList) {
         Map<String, List<ForecastData>> groupedData = new HashMap<>();
 
@@ -524,7 +574,10 @@ public class PrimaryController {
         return new ArrayList<>(groupedData.values());
     }
 
-    //przetwarzanie pogrupowanych dat na dane do prognozy
+    /**
+     * Sortowanie pogrupowanej listy dat do prognozy
+     * @param groupedForecastData Pogrupowana lista list dat
+     */
     private void processGroupedForecastData(List<List<ForecastData>> groupedForecastData) {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM");
         LocalDate currentDate = LocalDate.now();
@@ -565,7 +618,14 @@ public class PrimaryController {
         }
     }
 
-    //wypisywanie prognozy
+    /**
+     * Wypisywanie prognozy pogody
+     * @param dayIndex Licznik dnia
+     * @param minTemperature Temperatura minimalna przez cały dzień
+     * @param maxTemperature Temperatura maksymalna przez cały dzień
+     * @param date Data
+     * @param iconCode Kod ikony reprezentującej stan pogody w momencie osiągnięcia najwyższej temperatury
+     */
     private void setTemperatureFields(int dayIndex, double minTemperature, double maxTemperature, String date, String iconCode) {
         DecimalFormat decimalFormat = new DecimalFormat("#.#");
         String iconUrl = "https://openweathermap.org/img/wn/" + iconCode + "@2x.png";
