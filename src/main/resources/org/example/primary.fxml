@@ -13,10 +13,11 @@
    </stylesheets>
 
    <top>
-      <HBox spacing="10" styleClass="header">
-         <Label fx:id="forecastTitle" text="Forecast"  />
+      <HBox spacing="10" style="-fx-padding: 10;" alignment="CENTER">
+         <Label fx:id="forecastTitle" text="Forecast" style="-fx-font-size: 30px;"/>
          <Region HBox.hgrow="ALWAYS" />
-         <Button text="Button 1" />
+         <TextField fx:id="searchField"/>
+         <Button text="Szukaj" fx:id="searchButton" />
          <Button text="Button 2" />
          <Button text="Button 3" />
       </HBox>

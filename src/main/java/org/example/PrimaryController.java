@@ -1,19 +1,32 @@
 package org.example;
 
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
+
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.StageStyle;
 import org.example.ForecastData;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,6 +37,9 @@ public class PrimaryController {
 
     @FXML
     private ImageView weatherImage;
+
+    @FXML
+    private Button searchButton;
 
     @FXML
     private TextField searchField;
@@ -116,27 +132,164 @@ public class PrimaryController {
     private static final String API_URL = "http://api.openweathermap.org/data/2.5/weather";
 
     Map<String, List<ForecastData>> groupedData = new HashMap<>();
+    boolean isSearchMode = false;
+
+    private List<CityData> cityList; // Lista zawierająca dane miast
+
+    public void setCityList(List<CityData> cityList) {
+        this.cityList = cityList;
+    }
+
 
     @FXML
 
-    private void initialize() {
+    private void initialize() throws IOException {
+
+        searchField.setVisible(false); // Ukrywamy pole tekstowe na początku
+        searchButton.setText("Szukaj");
+        searchButton.setOnAction(event -> {
+            if (!isSearchMode) {
+                searchButton.setText("Zatwierdź");
+                searchField.setVisible(true);
+                isSearchMode = true;
+            } else {
+                searchButton.setText("Szukaj");
+                searchField.setVisible(false);
+                isSearchMode = false;
+                String searchText = searchField.getText();
+                showDialog(searchText);
+            }
+        });
+
+        double latitude = 50.02599;
+        double longitude = 20.96406;
+        initSearch(latitude, longitude);
+
+
+    }
+
+    private void initSearch(double lat, double lon) throws IOException {
+        String weatherData = fetchDataFromApi(String.valueOf(lat), String.valueOf(lon), "pl");
+        parseWeatherData(weatherData);
+
+        String forecastData = getForecastData(String.valueOf(lat), String.valueOf(lon));
+        List<ForecastData> forecastList = parseForecastData(forecastData);
+        processForecastList(forecastList);
+
+        List<List<ForecastData>> groupedForecastData = groupForecastDataByDate(forecastList);
+        processGroupedForecastData(groupedForecastData);
+    }
+
+    private void showDialog(String searchText) {
+        List<CityData> cityList = geocodeLocation(searchText);
+
+        Dialog<CityData> dialog = new Dialog<>();
+        dialog.setTitle("Szukaj");
+        dialog.setHeaderText("Wybierz lokalizację");
+
+        ButtonType cancelButtonType = new ButtonType("Anuluj", ButtonBar.ButtonData.CANCEL_CLOSE);
+        dialog.getDialogPane().getButtonTypes().add(cancelButtonType);
+
+        VBox vbox = new VBox();
+        vbox.setSpacing(10);
+
+        int maxItems = Math.min(cityList.size(), 10); // Ograniczenie do maksymalnie 10 pozycji
+
+        for (int i = 0; i < maxItems; i++) {
+            CityData cityData = cityList.get(i);
+
+            HBox cityBox = new HBox();
+            cityBox.setAlignment(Pos.CENTER_LEFT);
+            cityBox.setSpacing(10);
+
+            ImageView flagImageView = new ImageView();
+            flagImageView.setFitHeight(16);
+            flagImageView.setFitWidth(16);
+            flagImageView.setImage(getFlagImage(cityData.getCountry()));
+
+            Label cityNameLabel = new Label(cityData.getCityName());
+            Label coordinatesLabel = new Label(String.format("Lat: %.2f, Lon: %.2f", cityData.getLat(), cityData.getLon()));
+
+            cityBox.getChildren().addAll(flagImageView, cityNameLabel, coordinatesLabel);
+            cityBox.setCursor(Cursor.HAND);
+
+            cityBox.setOnMouseEntered(event -> cityBox.setStyle("-fx-background-color: #EFEFEF;"));
+            cityBox.setOnMouseExited(event -> cityBox.setStyle("-fx-background-color: transparent;"));
+
+            cityBox.setOnMouseClicked(event -> {
+                dialog.setResult(cityData);
+                dialog.close();
+            });
+
+            vbox.getChildren().add(cityBox);
+        }
+
+        dialog.getDialogPane().setContent(vbox);
+        dialog.initStyle(StageStyle.UNDECORATED);
+
+        Optional<CityData> result = dialog.showAndWait();
+        result.ifPresent(selectedCity -> {
+            try {
+                initSearch(selectedCity.getLat(), selectedCity.getLon());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+
+    private List<CityData> geocodeLocation(String locationName) {
+        List<CityData> cityList = new ArrayList<>();
+
         try {
-            String latitude = "50.02599";
-            String longitude = "20.96406";
-            String weatherData = fetchDataFromApi(latitude, longitude, "pl");
-            parseWeatherData(weatherData);
+            // Encode the location name to URL-safe format
+            String encodedLocation = URLEncoder.encode(locationName, StandardCharsets.UTF_8);
 
-            String forecastData = getForecastData(latitude, longitude);
-            List<ForecastData> forecastList = parseForecastData(forecastData);
-            processForecastList(forecastList);
+            // Construct the API URL for geocoding
+            String apiUrl = "http://api.openweathermap.org/geo/1.0/direct?q=" + encodedLocation +
+                    "&limit=10&appid=" + API_KEY;
 
-            List<List<ForecastData>> groupedForecastData = groupForecastDataByDate(forecastList);
-            processGroupedForecastData(groupedForecastData);
+            // Send a GET request to the API URL
+            HttpClient httpClient = HttpClient.newHttpClient();
+            HttpRequest httpRequest = HttpRequest.newBuilder()
+                    .uri(URI.create(apiUrl))
+                    .build();
+            HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
-        } catch (IOException e) {
+            // Parse the API response
+            JSONArray jsonArray = new JSONArray(httpResponse.body());
+
+            // Iterate over the JSON array and create CityData objects
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                String cityName = jsonObject.getString("name");
+                String countryCode = jsonObject.getString("country");
+                double latitude = jsonObject.getDouble("lat");
+                double longitude = jsonObject.getDouble("lon");
+
+                CityData cityData = new CityData(cityName, countryCode, latitude, longitude);
+                cityList.add(cityData);
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
+        return cityList;
     }
+
+
+    private Image getFlagImage(String countryCode) {
+        try {
+            String flagUrl = "https://flagcdn.com/w80/" + countryCode.toLowerCase() + ".png";
+            InputStream inputStream = new URL(flagUrl).openStream();
+            return new Image(inputStream);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
     private String fetchDataFromApi(String latitude, String longitude, String language) throws IOException {
         String urlString = API_URL + "?lat=" + latitude + "&lon=" + longitude + "&appid=" + API_KEY + "&lang=" + URLEncoder.encode(language, "UTF-8");
@@ -211,6 +364,11 @@ public class PrimaryController {
             String iconUrl = "https://openweathermap.org/img/wn/" + iconCode + "@4x.png";
             Image image = new Image(iconUrl);
             weatherImage.setImage(image);
+
+            String cityName = json.getString("name");
+
+            // Set the city name label
+            cityNameLabel.setText(cityName);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -320,7 +478,7 @@ public class PrimaryController {
 
     private void setTemperatureFields(int dayIndex, double minTemperature, double maxTemperature, String date, String iconCode) {
         DecimalFormat decimalFormat = new DecimalFormat("#.#");
-        String iconUrl = "https://openweathermap.org/img/wn/" + iconCode + ".png";
+        String iconUrl = "https://openweathermap.org/img/wn/" + iconCode + "@2x.png";
 
         switch (dayIndex) {
             case 1:
