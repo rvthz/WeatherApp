@@ -1,4 +1,6 @@
+org\example\SecondaryController.class
 org\example\App.class
 org\example\PrimaryController.class
-module-info.class
-org\example\SecondaryController.class
+org\example\LocationWindowController.class
+org\example\ForecastData.class
+org\example\LocationResult.class

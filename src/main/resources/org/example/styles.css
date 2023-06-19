@@ -1,0 +1,10 @@
+/* styles.css */
+.header {
+   -fx-background-color: #808080; /* Ustawia kolor tła na ciemny (#333333) */
+   -fx-text-fill: white; /* Ustawia kolor czcionki na biały */
+}
+
+.body {
+   -fx-background-color: #808080; /* Ustawia kolor tła na ciemny (#333333) */
+   -fx-text-fill: white; /* Ustawia kolor czcionki na biały */
+}
