@@ -23,7 +23,7 @@ public class App extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         stage.setTitle("Aplikacja pogodowa");
-        scene = new Scene(loadFXML("primary"), 800, 700);
+        scene = new Scene(loadFXML("primary"), 800, 900);
         //stage.setResizable(false);
 
         stage.setScene(scene);

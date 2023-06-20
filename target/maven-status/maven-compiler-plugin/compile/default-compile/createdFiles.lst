@@ -1,6 +1,5 @@
-CityPreferences.class
-org\example\PrimaryController.class
-org\example\CityData.class
 org\example\Main.class
 org\example\App.class
+org\example\PrimaryController.class
+org\example\CityData.class
 org\example\ForecastData.class
