@@ -147,6 +147,168 @@
 
                </VBox>
             </HBox>
+            <HBox alignment="CENTER" styleClass="forecast">
+               <VBox alignment="CENTER" spacing="10" HBox.hgrow="ALWAYS">
+                  <VBox alignment="CENTER" spacing="10">
+                     <Label fx:id="point1date" />
+                     <ImageView fx:id="point1icon" />
+                     <HBox alignment="CENTER">
+                        <Label fx:id="point1min">
+                           <HBox.margin>
+                              <Insets left="5" />
+                           </HBox.margin>
+                        </Label>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="point1max">
+                           <HBox.margin>
+                              <Insets right="5" />
+                           </HBox.margin>
+                        </Label>
+                     </HBox>
+                  </VBox>
+               </VBox>
+               <Region HBox.hgrow="ALWAYS" />
+               <VBox alignment="CENTER" spacing="10" HBox.hgrow="ALWAYS">
+                  <VBox alignment="CENTER" spacing="10">
+                     <Label fx:id="point2date" />
+                     <ImageView fx:id="point2icon" />
+                     <HBox alignment="CENTER">
+                        <Label fx:id="point2min">
+                           <HBox.margin>
+                              <Insets left="5" />
+                           </HBox.margin>
+                        </Label>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="point2max">
+                           <HBox.margin>
+                              <Insets right="5" />
+                           </HBox.margin>
+                        </Label>
+                     </HBox>
+                  </VBox>
+               </VBox>
+               <Region HBox.hgrow="ALWAYS" />
+               <VBox alignment="CENTER" spacing="10" HBox.hgrow="ALWAYS">
+                  <VBox alignment="CENTER" spacing="10">
+                     <Label fx:id="point3date" />
+                     <ImageView fx:id="point3icon" />
+                     <HBox alignment="CENTER">
+                        <Label fx:id="point3min">
+                           <HBox.margin>
+                              <Insets left="5" />
+                           </HBox.margin>
+                        </Label>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="point3max">
+                           <HBox.margin>
+                              <Insets right="5" />
+                           </HBox.margin>
+                        </Label>
+                     </HBox>
+                  </VBox>
+               </VBox>
+               <Region HBox.hgrow="ALWAYS" />
+               <VBox alignment="CENTER" spacing="10" HBox.hgrow="ALWAYS">
+                  <VBox alignment="CENTER" spacing="10">
+                     <Label fx:id="point4date" />
+                     <ImageView fx:id="point4icon" />
+                     <HBox alignment="CENTER">
+                        <Label fx:id="point4min">
+                           <HBox.margin>
+                              <Insets left="5" />
+                           </HBox.margin>
+                        </Label>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="point4max">
+                           <HBox.margin>
+                              <Insets right="5" />
+                           </HBox.margin>
+                        </Label>
+                     </HBox>
+                  </VBox>
+               </VBox>
+               <Region HBox.hgrow="ALWAYS" />
+               <VBox alignment="CENTER" spacing="10" HBox.hgrow="ALWAYS">
+                  <VBox alignment="CENTER" spacing="10">
+                     <Label fx:id="point5date" />
+                     <ImageView fx:id="point5icon" />
+                     <HBox alignment="CENTER">
+                        <Label fx:id="point5min">
+                           <HBox.margin>
+                              <Insets left="5" />
+                           </HBox.margin>
+                        </Label>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="point5max">
+                           <HBox.margin>
+                              <Insets right="5" />
+                           </HBox.margin>
+                        </Label>
+                     </HBox>
+                  </VBox>
+               </VBox>
+               <Region HBox.hgrow="ALWAYS" />
+               <VBox alignment="CENTER" spacing="10" HBox.hgrow="ALWAYS">
+                  <VBox alignment="CENTER" spacing="10">
+                     <Label fx:id="point6date" />
+                     <ImageView fx:id="point6icon" />
+                     <HBox alignment="CENTER">
+                        <Label fx:id="point6min">
+                           <HBox.margin>
+                              <Insets left="5" />
+                           </HBox.margin>
+                        </Label>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="point6max">
+                           <HBox.margin>
+                              <Insets right="5" />
+                           </HBox.margin>
+                        </Label>
+                     </HBox>
+                  </VBox>
+               </VBox>
+               <Region HBox.hgrow="ALWAYS" />
+               <VBox alignment="CENTER" spacing="10" HBox.hgrow="ALWAYS">
+                  <VBox alignment="CENTER" spacing="10">
+                     <Label fx:id="point7date" />
+                     <ImageView fx:id="point7icon" />
+                     <HBox alignment="CENTER">
+                        <Label fx:id="point7min">
+                           <HBox.margin>
+                              <Insets left="5" />
+                           </HBox.margin>
+                        </Label>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="point7max">
+                           <HBox.margin>
+                              <Insets right="5" />
+                           </HBox.margin>
+                        </Label>
+                     </HBox>
+                  </VBox>
+               </VBox>
+               <Region HBox.hgrow="ALWAYS" />
+               <VBox alignment="CENTER" spacing="10" HBox.hgrow="ALWAYS">
+                  <VBox alignment="CENTER" spacing="10">
+                     <Label fx:id="point8date" />
+                     <ImageView fx:id="point8icon" />
+                     <HBox alignment="CENTER">
+                        <Label fx:id="point8min">
+                           <HBox.margin>
+                              <Insets left="5" />
+                           </HBox.margin>
+                        </Label>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="point8max">
+                           <HBox.margin>
+                              <Insets right="5" />
+                           </HBox.margin>
+                        </Label>
+                     </HBox>
+                  </VBox>
+               </VBox>
+            </HBox>
+
 
          </VBox>
 

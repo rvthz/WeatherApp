@@ -30,8 +30,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -122,6 +121,18 @@ public class PrimaryController {
     private ImageView day4icon;
 
     @FXML
+    private Label point1date, point2date, point3date, point4date, point5date, point6date, point7date, point8date;
+
+    @FXML
+    private ImageView point1icon, point2icon, point3icon, point4icon, point5icon, point6icon, point7icon, point8icon;
+
+    @FXML
+    private Label point1min, point2min, point3min, point4min, point5min, point6min, point7min, point8min;
+
+    @FXML
+    private Label point1max, point2max, point3max, point4max, point5max, point6max, point7max, point8max;
+
+    @FXML
     private Label day5date;
 
     @FXML
@@ -167,7 +178,9 @@ public class PrimaryController {
 
     private List<CityData> cityList; // Lista zawierająca dane miast
 
-
+    /**
+     *Inicjalizacja ekranu prognozy pogody
+     */
     @FXML
 
     private void initialize() throws IOException {
@@ -372,7 +385,7 @@ public class PrimaryController {
     /**
      * Medota służąca do flag państw
      * @param countryCode kod ISO państwa
-     * @returns obraz z flagą państwa
+     * @return obraz z flagą państwa
      */
     private Image getFlagImage(String countryCode) {
         try {
@@ -390,7 +403,7 @@ public class PrimaryController {
      * @param latitude Szerokość geogr.
      * @param longitude Długość geogr.
      * @param language Język, w jakim pobrane zostaną dane
-     * @returns Wynik zapytania GET
+     * @return Wynik zapytania GET
      */
     private String fetchDataFromApi(String latitude, String longitude, String language) throws IOException {
         String urlString = API_URL + "?lat=" + latitude + "&lon=" + longitude + "&appid=" + API_KEY + "&lang=" + URLEncoder.encode(language, "UTF-8");
@@ -459,11 +472,12 @@ public class PrimaryController {
 
 
             temperatureLabel.setText(Math.round(temperatureCelsius) + "°C");
-            minTempLabel.setText(decimalFormat.format(minTemperature - 273.15) + "°C");
-            maxTempLabel.setText(decimalFormat.format(maxTemperature - 273.15) + "°C");
+            minTempLabel.setText(decimalFormat.format(minTemperature - 273.15) + "°");
+            maxTempLabel.setText(decimalFormat.format(maxTemperature - 273.15) + "°");
             pressureLabel.setText("Ciśnienie " + pressure + " hPa");
             humidityLabel.setText("Wilgotność " + humidity + "%");
-            windSpeedLabel.setText("Wiatr " + decimalFormat.format(windSpeed) + " m/s");
+            String windDirectionText = getWindDirectionText(windDirection);
+            windSpeedLabel.setText("Wiatr " + decimalFormat.format(windSpeed) + " m/s" + ", " + windDirectionText);
             feelsLikeLabel.setText("Odczuwalna " + decimalFormat.format(feelsLikeCelsius) + "°C");
 
 
@@ -479,8 +493,7 @@ public class PrimaryController {
 
             cityNameLabel.setText(cityName);
 
-            String windDirectionText = getWindDirectionText(windDirection);
-            windDirectionLabel.setText("Kierunek wiatru " + windDirectionText);
+
 
 
         } catch (Exception e) {
@@ -491,7 +504,7 @@ public class PrimaryController {
     /**
      * Konwersja wiatru stopnie -> kierunek
      * @param windDirection kierunek wiatru w stopniach
-     * @returns kierunek wiatru słownie
+     * @return kierunek wiatru słownie
      */
     private String getWindDirectionText(double windDirection) {
         String[] directions = {"Północny", "Północno-Wschodni", "Wschodni", "Południowo-Wschodni", "Południowy",
@@ -504,7 +517,7 @@ public class PrimaryController {
     /**
      * Pobieranie danych do prognozy
      * @param forecastData wynik zapytania GET
-     * @returns Lista snapshotów pogodowych (co 3 godziny)
+     * @return Lista snapshotów pogodowych (co 3 godziny)
      */
     private List<ForecastData> parseForecastData(String forecastData) {
         List<ForecastData> forecastList = new ArrayList<>();
@@ -531,7 +544,101 @@ public class PrimaryController {
             e.printStackTrace();
         }
 
+        //wypisuje prognoze na 24h
+        processTodays(forecastList);
         return forecastList;
+    }
+
+    /**
+     * Wypisuje pogode na kolejen 24 godziny, co 3 godziny
+     * @param cityDataList lista timestampow
+     */
+    public void processTodays(List<ForecastData> cityDataList) {
+
+        Collections.sort(cityDataList, Comparator.comparing(ForecastData::getTimestamp));
+
+        for (int i = 0; i < 8 && i < cityDataList.size(); i++) {
+            ForecastData cityData = cityDataList.get(i);
+            String formattedTime = timestampToTime(cityData.getTimestamp());
+
+            switch (i) {
+                case 0:
+                    updateLabel(point1date, formattedTime);
+                    //updateLabel(point1max, formatTemperature(cityData.getMinTemperature()));
+                    updateLabel(point1min, formatTemperature(cityData.getMaxTemperature()));
+                    updateImage(point1icon, "http://openweathermap.org/img/w/" + cityData.getIconCode() + ".png");
+                    break;
+                case 1:
+                    updateLabel(point2date, formattedTime);
+                    //updateLabel(point2max, formatTemperature(cityData.getMinTemperature()));
+                    updateLabel(point2min, formatTemperature(cityData.getMaxTemperature()));
+                    updateImage(point2icon, "http://openweathermap.org/img/w/" + cityData.getIconCode() + ".png");
+                    break;
+                case 2:
+                    updateLabel(point3date, formattedTime);
+                    //updateLabel(point3max, formatTemperature(cityData.getMinTemperature()));
+                    updateLabel(point3min, formatTemperature(cityData.getMaxTemperature()));
+                    updateImage(point3icon, "http://openweathermap.org/img/w/" + cityData.getIconCode() + ".png");
+                    break;
+                case 3:
+                    updateLabel(point4date, formattedTime);
+                    updateLabel(point4min, formatTemperature(cityData.getMaxTemperature()));
+                    updateImage(point4icon, "http://openweathermap.org/img/w/" + cityData.getIconCode() + ".png");
+                    break;
+                case 4:
+                    updateLabel(point5date, formattedTime);
+                    //updateLabel(point5min, formatTemperature(cityData.getMaxTemperature()));
+                    updateImage(point5icon, "http://openweathermap.org/img/w/" + cityData.getIconCode() + ".png");
+                    break;
+                case 5:
+                    updateLabel(point6date, formattedTime);
+                    //updateLabel(point6max, formatTemperature(cityData.getMinTemperature()));
+                    updateLabel(point6min, formatTemperature(cityData.getMaxTemperature()));
+                    updateImage(point6icon, "http://openweathermap.org/img/w/" + cityData.getIconCode() + ".png");
+                    break;
+                case 6:
+                    updateLabel(point7date, formattedTime);
+                    //updateLabel(point7max, formatTemperature(cityData.getMinTemperature()));
+                    updateLabel(point7min, formatTemperature(cityData.getMaxTemperature()));
+                    updateImage(point7icon, "http://openweathermap.org/img/w/" + cityData.getIconCode() + ".png");
+                    break;
+                case 7:
+                    updateLabel(point8date, formattedTime);
+                    //updateLabel(point8max, formatTemperature(cityData.getMinTemperature()));
+                    updateLabel(point8min, formatTemperature(cityData.getMaxTemperature()));
+                    updateImage(point8icon, "http://openweathermap.org/img/w/" + cityData.getIconCode() + ".png");
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+
+    private String formatTemperature(double temperature) {
+        double celsius = temperature - 273.15;
+        int roundedCelsius = (int) Math.round(celsius);
+        return roundedCelsius + "°";
+    }
+
+    /**
+     * Konwertuje timestamp na godzine
+     * @param timestamp timestamp pobrany z API
+     * @return czas HH:mm
+     */
+    private String timestampToTime(long timestamp) {
+        Instant instant = Instant.ofEpochMilli(timestamp * 1000);
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+        return localDateTime.format(DateTimeFormatter.ofPattern("HH:mm"));
+    }
+
+    private void updateLabel(Label label, String text) {
+        label.setText(text);
+    }
+
+    private void updateImage(ImageView imageView, String imageUrl) {
+        Image image = new Image(imageUrl);
+        imageView.setImage(image);
     }
 
     /**
@@ -554,7 +661,7 @@ public class PrimaryController {
     /**
      * Grupowanie dat prognozy pogody
      * @param forecastList lista zdarzeń pogodowych co 3h po konwersji timestampów
-     * @returns Lista list, zawierająca listy zdarzeń dla różnych dat
+     * @return Lista list, zawierająca listy zdarzeń dla różnych dat
      */
     private List<List<ForecastData>> groupForecastDataByDate(List<ForecastData> forecastList) {
         Map<String, List<ForecastData>> groupedData = new HashMap<>();
@@ -632,32 +739,32 @@ public class PrimaryController {
 
         switch (dayIndex) {
             case 1:
-                day1min.setText(decimalFormat.format(minTemperature - 273.15) + "°C");
-                day1max.setText(decimalFormat.format(maxTemperature - 273.15) + "°C");
+                day1min.setText(decimalFormat.format(minTemperature - 273.15) + "°");
+                day1max.setText(decimalFormat.format(maxTemperature - 273.15) + "°");
                 day1date.setText(date);
                 loadImageIntoImageView(day1icon, iconUrl);
                 break;
             case 2:
-                day2min.setText(decimalFormat.format(minTemperature - 273.15) + "°C");
-                day2max.setText(decimalFormat.format(maxTemperature - 273.15) + "°C");
+                day2min.setText(decimalFormat.format(minTemperature - 273.15) + "°");
+                day2max.setText(decimalFormat.format(maxTemperature - 273.15) + "°");
                 day2date.setText(date);
                 loadImageIntoImageView(day2icon, iconUrl);
                 break;
             case 3:
-                day3min.setText(decimalFormat.format(minTemperature - 273.15) + "°C");
-                day3max.setText(decimalFormat.format(maxTemperature - 273.15) + "°C");
+                day3min.setText(decimalFormat.format(minTemperature - 273.15) + "°");
+                day3max.setText(decimalFormat.format(maxTemperature - 273.15) + "°");
                 day3date.setText(date);
                 loadImageIntoImageView(day3icon, iconUrl);
                 break;
             case 4:
-                day4min.setText(decimalFormat.format(minTemperature - 273.15) + "°C");
-                day4max.setText(decimalFormat.format(maxTemperature - 273.15) + "°C");
+                day4min.setText(decimalFormat.format(minTemperature - 273.15) + "°");
+                day4max.setText(decimalFormat.format(maxTemperature - 273.15) + "°");
                 day4date.setText(date);
                 loadImageIntoImageView(day4icon, iconUrl);
                 break;
             case 5:
-                day5min.setText(decimalFormat.format(minTemperature - 273.15) + "°C");
-                day5max.setText(decimalFormat.format(maxTemperature - 273.15) + "°C");
+                day5min.setText(decimalFormat.format(minTemperature - 273.15) + "°");
+                day5max.setText(decimalFormat.format(maxTemperature - 273.15) + "°");
                 day5date.setText(date);
                 loadImageIntoImageView(day5icon, iconUrl);
                 break;

@@ -10,17 +10,21 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 /**
- * JavaFX App
+ * Główna klasa aplikacji
  */
 public class App extends Application {
 
     private static Scene scene;
 
 
+    /**
+     * Uruchomienie sceny
+     */
     @Override
     public void start(Stage stage) throws IOException {
         stage.setTitle("Aplikacja pogodowa");
         scene = new Scene(loadFXML("primary"), 800, 700);
+        //stage.setResizable(false);
 
         stage.setScene(scene);
 
